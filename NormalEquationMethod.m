@@ -14,26 +14,46 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} NormalEquationMethod (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-05
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
 
-w=[y0];
-t=[t0];
+# q is the order of the polynomial model
+function [a E RE] = NormalEquationMethod (x,y,q)
 
-n=(tf-t0)/h;
+  pkg load signal;
 
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+  A=[];
+
+
+  for i=0:q
+    A=[A;x.^i];
+  endfor
+
+  A=A';
+
+  ATA=transpose(A)*A;
+
+  ATb=transpose(A)*y';
+
+  a=Gauss(ATA,ATb);
+
+  # Overall Error
+
+  r=y'-(A*a);
+  E=sum(r.^2);
+  disp("---------------------------")
+  d=["squared error (E) = ",num2str(E)];
+  disp(d)
+
+  RE=rms(r);
+  disp("---------------------------")
+  d=["rms Error (RE)= ",num2str(RE)];
+  disp(d)
 
 endfunction

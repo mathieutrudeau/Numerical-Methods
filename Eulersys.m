@@ -14,26 +14,30 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} Eulersys (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-06
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
 
-w=[y0];
-t=[t0];
+#>> function z=f(t,y)
+#>> z(1)=y(2)^2-2*y(1);
+#>> z(2)=y(1)-y(2)-t*y(2)^2;
+#>> endfunction
 
-n=(tf-t0)/h;
+##[t w]=Euler(@f, 0, [0 1], 0.1, 3)
 
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+function [t,w] = Eulersys (f,t0,y0,h,n)
+
+  w=[y0];
+  t=[t0];
+
+  for i=1:n
+    w=[w;w(i,:)+h*f(t(i),w(i,:))];
+    t=[t;t(i)+h];
+  endfor
 
 endfunction

@@ -25,3 +25,8 @@
 function retval = RichardsonErrorEulers (q,eh1,eh2,h1,h2)
 retval=abs((eh2-eh1)/((((h1)/(h2))^q)-1));
 endfunction
+
+
+
+
+

@@ -14,26 +14,70 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} NewtonInterpol (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-05
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
+function f = NewtonInterpol (xi,y)
+  pkg load symbolic;
 
-w=[y0];
-t=[t0];
+  m=size(y,2);
+  k=m;
 
-n=(tf-t0)/h;
+  xi=xi';
+  y=y';
 
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+  f=[y];
+  fx=[xi];
+
+  a=[];
+
+  for i=1:m
+    for j=1:k
+      if m==k
+        break;
+      else
+        f(j,1)=(f(j+1,1)-f(j,1))/(fx(j+(m-k),1)-fx(j,1));
+      endif
+    endfor
+    disp("=======================")
+
+
+    a=[a;f(1,1)];
+
+    f
+    fx
+    k
+    k=k-1;
+  endfor
+
+  A=[a]
+
+  syms x;
+
+  B=sym(ones(m-1,1));
+  S=sym(zeros(m,1));
+  B(1)=(x-xi(1));
+
+  for m=2:length(A)-1
+    B(m)=B(m-1)*(x-xi(m));
+  endfor
+
+  for p=2:length(A)
+    S(p)=A(p)*B(p-1);
+  endfor
+
+  S=sum(S)+A(1);
+
+  f=function_handle(expand(S));
+
+
+
+
+
 
 endfunction

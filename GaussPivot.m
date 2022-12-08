@@ -14,26 +14,40 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} GaussPivot (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-02
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
+function x = GaussPivot (a,b)
 
-w=[y0];
-t=[t0];
+  ab=[a,b];
+  [R, C]=size(ab);
+  for j=1:R-1
+    % Pivoting Section Starts
+    if ab(j,j)==0
+      for k=j+1:R
+        if ab(k,j)~=0
+          abTemp=ab(j,:);
+          ab(j,:)=ab(k,:);
+          ab(k,:)=abTemp;
+          break
+        endif
+      endfor
+    endif
+    % Pivoting section ENDS
+    for i=j+1:R
+      ab(i,j:C)=ab(i,j:C)-ab(i,j)/ab(j,j)*ab(j,j:C);
+    endfor
+  endfor
 
-n=(tf-t0)/h;
-
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+  x=zeros(R,1);
+  x(R)=ab(R,C)/ab(R,R);
+  for i=R-1:-1:1
+    x(i)=(ab(i,C)-ab(i,i+1:R)*x(i+1:R))/ab(i,i);
+  endfor
 
 endfunction

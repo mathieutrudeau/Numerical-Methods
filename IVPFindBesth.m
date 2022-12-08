@@ -14,26 +14,29 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} IVPFindBesth (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-11-28
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
-
-w=[y0];
-t=[t0];
-
-n=(tf-t0)/h;
+function [h,w,e] = IVPFindBesth (f,t0,tf,y0,n)
+hc=tf-t0;
+[tc,wc] = ClassicalRK4Method (f,t0,tf,y0,hc);
+h=[hc];
+w=[wc(end)];
+e=[NA];
 
 for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
+  hc=hc/2;
+  [tc,wc] = ClassicalRK4Method (f,t0,tf,y0,hc);
+  ec= RichardsonErrorEulers (4,w(end),wc(end),h(end),hc);
+  h=[h;hc];
+  w=[w;wc(end)];
+  e=[e;ec];
+
 endfor
 
 endfunction

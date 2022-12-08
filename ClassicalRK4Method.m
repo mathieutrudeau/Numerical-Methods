@@ -27,7 +27,7 @@ function [t,w] = ClassicalRK4Method (f,t0,tf,y0,h)
 w=[y0];
 t=[t0];
 
-n=tf/h;
+n=(tf-t0)/h;
 
 for i=1:n
   k1=f(t(i),w(i));

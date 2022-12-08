@@ -14,26 +14,32 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} RootMultiplicity (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-02
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
+function m = RootMultiplicity (f,r)
+  m=-1;
+  i=-1;
 
-w=[y0];
-t=[t0];
+  do
+    i=i+1;
+    m=m+1;
+    pkg load symbolic;
+    syms z;
+    ff=f(z);
+    ffd=diff(ff,z,i);
+    df=function_handle(ffd);
 
-n=(tf-t0)/h;
+    try
+      v=df(r);
+    catch
+      return;
+    end_try_catch
 
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
-
+  until round(v)!=0
 endfunction

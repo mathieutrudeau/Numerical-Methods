@@ -14,26 +14,22 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} LinearSplineInterpol (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-06
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
+function yc = LinearSplineInterpol (x1,x2,y1,y2,xc)
 
-w=[y0];
-t=[t0];
+  a=(y2-y1)/(x2-x1);
 
-n=(tf-t0)/h;
+  b=y1-(a*x1);
 
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+  f=@(x) a*x+b;
+
+  yc=f(xc);
 
 endfunction

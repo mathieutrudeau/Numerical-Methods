@@ -14,26 +14,26 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} RungeKuttaMidpointMethod (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} EstimateTrueError (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
 
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
-## Created: 2022-11-23
+## Created: 2022-12-02
 
-function [t,w] = RungeKuttaMidpointMethod (f,t0,tf,y0,h)
+function e = EstimateTrueError (f,m,xr)
 
-w=[y0];
-t=[t0];
+    pkg load symbolic;
+    syms z;
+    ff=f(z);
+    ffd=diff(ff,z,m);
+    df=function_handle(ffd);
 
-n=(tf-t0)/h;
-
-for i=1:n
-  k1=f(t(i),w(i));
-  k2=f((t(i)+(h/2)),(w(i)+k1*h*(1/2)));
-  w=[w ; w(i)+h*k2];
-  t=[t ; t(i)+h];
-endfor
+    if nargin(df)>0
+      e=(abs((factorial(m)*f(xr))/(df(xr))))^(1/m);
+    else
+      e=(abs((factorial(m)*f(xr))/((df()))))^(1/m);
+    endif
 
 endfunction

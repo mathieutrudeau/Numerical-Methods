@@ -14,7 +14,7 @@
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {} {@var{retval} =} Bisect (@var{input1}, @var{input2})
+## @deftypefn {} {@var{retval} =} RootOrderOfConvergence (@var{input1}, @var{input2})
 ##
 ## @seealso{}
 ## @end deftypefn
@@ -22,61 +22,65 @@
 ## Author: Mathieu <Mathieu@MATHIEU-PC>
 ## Created: 2022-12-02
 
-function c = Bisection(f, a, b, error)
-  format long;
-  %Making sure that the user didn't input invalid endpoints.
-  if ~(f(a) < 0)
-    disp("f(a) must be less than 0")
-  elseif ~(f(b) > 0)
-    disp("f(b) must be greater than 0")
-  else
-    c = 1e9;
 
-   prevc = c-1;
-   i=0;
+%NOTE!!!
+% If f=x^3-2x+3 then g=(2x-3)^(1/3)
+% r is the location of the root
+% algo=1 --> Bisection
+% algo=2 --> Fixed Point
+% algo=3 --> Newton
+
+function i = RootOrderOfConvergence (g,r,error,algo)
+  format long;
+  if algo==1
+    lambda=1/2;
+    oc=1;
+  elseif algo==2
+    pkg load symbolic;
+    syms z;
+    ff=g(z);
+    ffd=diff(ff,z,1);
+    dg=function_handle(ffd);
+
+    lambda=abs(dg(r));
+    oc=1;
+  else
+    pkg load symbolic;
+    syms z;
+    ff=g(z);
+    ffd=diff(ff,z,1);
+    dg=function_handle(ffd);
+
+    pkg load symbolic;
+    syms z;
+    ff=g(z);
+    ffd=diff(ff,z,2);
+    dgg=function_handle(ffd);
+
+    lambda=abs((dgg(r))/(2*dg(r)));
+    oc=2;
+  endif
+
+
+  i=0;
+  e=abs(r);
 
   do
     disp("---------------------------")
     x=["i = ",num2str(i)];
     disp(x)
-    x=["a = ",num2str(a)];
-    disp(x)
-    x=["b = ",num2str(b)];
+    x=["e = ",num2str(e)];
     disp(x)
 
-    c = (a+b)/2;
-
-    x=["c = ",num2str(c)];
-    disp(x)
-    x=["f(a) = ",num2str(f(a))];
-    disp(x)
-    x=["f(b) = ",num2str(f(b))];
-    disp(x)
-    x=["f(c) = ",num2str(f(c))];
-    disp(x)
-
-    absError=abs((b-a)/2);
-
-    x=["absError = ",num2str(absError)];
-    disp(x)
-
-    relError=abs(absError/c);
-
-    x=["relError = ",num2str(relError)];
-    disp(x)
-
-    if f(c)*f(a) < 0
-      b = c;
-    else
-      a = c;
-    endif
-
-    prevc=c;
     i=i+1;
-  until absError < error
+    e=lambda*e^oc;
+
+  until e<error
 
   disp("---------------------------")
-  x = ["The root is approximately located at ", num2str(c)];
-  disp(x)
-  endif
+    x=["i = ",num2str(i)];
+    disp(x)
+    x=["e = ",num2str(e)];
+    disp(x)
+
 endfunction
